@@ -9,7 +9,7 @@
 --------------------------------
 ## Topologi
 
-![topologi](Images/topologi.png)
+![topologi](Images/Topologi.png)
 
 ### Netwok Configuration
 
