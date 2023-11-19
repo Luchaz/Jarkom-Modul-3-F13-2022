@@ -15,207 +15,374 @@
 
 Router:
 * Aura (Router/DHCP Relay):
-    ```sh
+```sh
+auto eth0
+iface eth0 inet dhcp
 
-    ```
+auto eth1
+iface eth1 inet static
+	address 10.58.1.0
+	netmask 255.255.255.0
+
+auto eth2
+iface eth2 inet static
+	address 10.58.2.0
+	netmask 255.255.255.0
+
+auto eth3
+iface eth3 inet static
+	address 10.58.3.0
+	netmask 255.255.255.0
+auto eth4
+iface eth4 inet static
+	address 10.58.4.0
+	netmask 255.255.255.0
+```
 
 Switch 1
 * Himmel (DHCP Server):
-    ```sh
-   
-    ```
+```sh
+auto eth0
+iface eth0 inet static
+  address 10.58.1.1
+  netmask 255.255.255.0
+  gateway 10.58.1.0   
+```
 
 * Heiter (DNS Server):
-    ```sh
-   
-    ```
+```sh
+auto eth0
+iface eth0 inet static
+  address 10.58.1.2
+  netmask 255.255.255.0
+  gateway 10.58.1.0   
+```
 
 Switch2
 * Denken (Database Server):
-    ```sh
- 
-    ```
+```sh
+auto eth0
+iface eth0 inet static
+  address 10.58.2.1
+  netmask 255.255.255.0
+  gateway 10.58.2.0   
+```
 
 * Eisen (Load Balancer):
-    ```sh
-  
-    ```
+```sh
+auto eth0
+iface eth0 inet static
+  address 10.58.2.2
+  netmask 255.255.255.0
+  gateway 10.58.2.0   
+```
 
 Switch3
-* Revolte (Client):
-    ```sh
-    
-    ```
-
-* Richter (Client):
-    ```sh
-   
-    ```
-
-* Lawine (Laravel Worker):
-    ```sh
- 
-    ```
-
-* Linie (Laravel Worker):
-    ```sh
-
-    ```
+* Revolte & Richter (Client):
+```sh
+auto eth0
+iface eth0 inet dhcp 
+```
 
 * Lugner (Laravel Worker):
-    ```sh
+```sh
+auto eth0
+iface eth0 inet static
+  address 10.58.3.1
+  netmask 255.255.255.0
+  gateway 10.58.3.0  
+```
 
-    ```
+* Lawine (Laravel Worker):
+```sh
+auto eth0
+iface eth0 inet static
+  address 10.58.3.3
+  netmask 255.255.255.0
+  gateway 10.58.3.0  
+```
+
+* Linie (Laravel Worker):
+```sh
+auto eth0
+iface eth0 inet static
+  address 10.58.3.2
+  netmask 255.255.255.0
+  gateway 10.58.3.0  
+```
 
 Switch4
-* Sein (Client):
-    ```sh
-
-    ```
-
-* Stark (Client):
-    ```sh
-
-    ```
+* Sein &  Stark (Client):
+```sh 
+auto eth0
+iface eth0 inet dhcp
+```
 
 * Frieren (PHP Worker):
-    ```sh
-
-    ```
+```sh 
+auto eth0
+iface eth0 inet static
+  address 10.58.4.3
+  netmask 255.255.255.0
+  gateway 10.58.4.0  
+```
 
 * Flamme (PHP Worker):
-    ```sh
- 
-    ```
+```sh 
+auto eth0
+iface eth0 inet static
+  address 10.58.4.2
+  netmask 255.255.255.0
+  gateway 10.58.4.0  
+```
 
 * Fern (PHP Worker):
-    ```sh
-  
-    ```
-
-## Setup DHCP
-
-### Setup DHCP Relay on `Aura`
-
-1. install `isc-dhcp-relay`
-2. configure `/etc/default/isc-dhcp-relay`
-3. configure `/etc/sysctl.conf`
-4. run `service isc-dhcp-relay restart`
-
-* `/etc/default/isc-dhcp-relay`:
-    ```sh
-  
-    ```
-* `/etc/sysctl.conf`:
-    ```sh
-  
-    ```
-
-### Setup DHCP Server on `Himmel`
-
-1. install `isc-dhcp-server`
-2. konfigurasi `/etc/default/isc-dhcp-server`
-3. konfigurasi `/etc/dhcp/dhcpd.conf`
-4. jalankan `service isc-dhcp-server restart`
-
-* `/etc/default/isc-dhcp-server`:
-    ```sh
-   
-    ```
-
-* `/etc/dhcp/dhcpd.conf`:
-    ```sh
-
-    ```
+```sh 
+auto eth0
+iface eth0 inet static
+  address 10.58.4.1
+  netmask 255.255.255.0
+  gateway 10.58.4.0  
+```
+## Soal 0
+* Setup
+seluruh node menjalan kan
+```sh
+echo nameserver 192.168.122.1
+```
 
 ## Soal 1
 
 > Setelah mengalahkan Demon King, perjalanan berlanjut. Kali ini, kalian diminta untuk melakukan register domain berupa `riegel.canyon.f04.com` untuk worker Laravel dan `granz.channel.f04.com` untuk worker PHP (0) mengarah pada worker yang memiliki IP `192.223.x.1`.
 
 
-1. tambakan `nameserver` pada `/etc/resolv.conf`
+1. Konfigurasi pada Heiter (DNS Server)
 ...
 
-* `/etc/resolv.conf`:
-    ```sh
- 
-    ```
 
+* `update n instalasi bind9`:
+```sh
+apt-get update
+apt-get install bind9 -y
+```
 * `/etc/bind/named.conf.local`:
-    ```sh
+```sh
+zone "riegel.canyon.f13.com" {
+        type master;
+        file "/etc/bind/jarkom/riegel.canyon.f13.com";
+};
 
-    ```
+zone "granz.channel.f13.com" {
+        type master;
+        file "/etc/bind/jarkom/granz.channel.f13.com";
+};
+```
+2. Pembuatan directory jarkom
+```sh
+mkdir /etc/bind/jarkom
+```
 
-* `/etc/bind/named.conf.options`:
-    ```sh
+3. File riegel & granz
+```sh
+##/etc/bind/granz/riegel.canyon.f04.com
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     riegel.canyon.f13.com. root.riegel.canyon.f13.com. (
+                        2023111301      ; Serial
+                        604800          ; Refresh
+                        86400           ; Retry
+                        2419200         ; Expire
+                        604800 )        ; Negative Cache TTL
+;
+@               IN      NS      riegel.canyon.f13.com.
+@               IN      A       10.58.4.1 ; IP Fern Laravel Workerr' 
+> /etc/bind/jarkom/riegel.canyon.f13.com
 
-    ```
 
-* `/etc/bind/granz/granz.channel.f04.com`:
-    ```sh
+##/etc/bind/granz/granz.channel.f04.com
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     granz.channel.f13.com.  root.granz.channel.f13.com.  (
+                        2023111301      ; Serial
+                        604800          ; Refresh
+                        86400           ; Retry
+                        2419200         ; Expire
+                        604800 )        ; Negative Cache TTL
+;
+@               IN      NS      granz.channel.f13.com.
+@               IN      A       10.58.3.1 ; IP Lugner PHP Worker' 
+```
 
-    ```
+4. Perubahan file /etc/bind/named.conf.options
+```sh
+options {
+        directory "/var/cache/bind";
 
-* `/etc/bind/riegel/riegel.canyon.f04.com`:
-    ```sh
+        forwarders {
+                192.168.122.1;
+        };
 
-    ```
+        // dnssec-validation auto;
+        allow-query{any;};
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};
+```
+5. Restart bind9:
+```sh
+service bind9 restart
+`````
+
+![ping dari client](Images/jarkom2.png)
 
 ## Soal 2
  > Client yang melalui Switch3 mendapatkan range IP dari 192.223.3.16 - 192.223.3.32 dan 192.223.3.64 - 192.223.3.80
 
 
 
-1. tambahkan konfigurasi range ip pada `/etc/default/isc-dhcp-server` on `Himmel`
+1. tambahkan konfigurasi range ip pada `/etc/dhcp/dhcpd.conf` on `Himmel`
 
-* `/etc/default/isc-dhcp-server`:
-    ```sh
-    ...
-   
-    ...
-    ```
+* `/etc/dhcp/dhcpd.conf`:
+```sh
+echo 'subnet 10.58.1.0 netmask 255.255.255.0 {
+}
+
+subnet 10.58.2.0 netmask 255.255.255.0 {
+}
+
+subnet 192.212.3.0 netmask 255.255.255.0 {
+        range 10.58.3.16 10.58.3.32;
+        range 10.58.3.64 10.58.3.80;
+        option routers 10.58.3.0;
+
+}' > /etc/dhcp/dhcpd.conf
+
+service isc-dhcp-server restart
+service isc-dhcp-server status
+
+```
 
 ## Soal 3
 
 > Client yang melalui Switch4 mendapatkan range IP dari 192.223.4.12 - 192.223.4.20 dan 192.223.4.160 - 192.223.4.168
 
 
-1. add ip range configuration in `/etc/default/isc-dhcp-server` on `Himmel`
+1. add ip range configuration in `/etc/dhcp/dhcpd.conf` on `Himmel`
 
-* `/etc/default/isc-dhcp-server`:
-    ```sh
-    ...
-  
-    ...
-    ```
+* `/etc/dhcp/dhcpd.conf`:
+```sh
+    echo 'subnet 10.58.1.0 netmask 255.255.255.0 {
+}
+
+subnet 10.58.2.0 netmask 255.255.255.0 {
+}
+
+subnet 192.212.3.0 netmask 255.255.255.0 {
+        range 10.58.3.16 10.58.3.32;
+        range 10.58.3.64 10.58.3.80;
+        option routers 10.58.3.0;
+}
+
+subnet 10.58.4.0 netmask 255.255.255.0 {
+        range 10.58.4.12 10.58.4.20;
+        range 10.58.4.160 10.58.4.168;
+        option routers 10.58.4.0;
+}' > /etc/dhcp/dhcpd.conf
+```
 
 ## Soal 4
 
 > Client mendapatkan DNS dari Heiter dan dapat terhubung dengan internet melalui DNS tersebut
 
 
-1. tambahkan konfigurasi DNS pada `/etc/default/isc-dhcp-server` di `Himmel` menuju `Heiter`
+1. tambahkan konfigurasi DNS pada `/etc/dhcp/dhcpd.conf` di `Himmel` menuju `Heiter`
 
-* `/etc/default/isc-dhcp-server`:
-    ```sh
-    ...
- 
-    ...
-    ```
+* `/etc/dhcp/dhcpd.conf`:
+```sh
+echo 'subnet 10.58.1.0 netmask 255.255.255.0 {
+}
+
+subnet 10.58.2.0 netmask 255.255.255.0 {
+}
+
+subnet 192.212.3.0 netmask 255.255.255.0 {
+        range 10.58.3.16 10.58.3.32;
+        range 10.58.3.64 10.58.3.80;
+        option routers 10.58.3.0;
+        option broadcast-address 10.58.3.255;
+        option domain-name-servers 10.58.1.2;
+}
+
+subnet 10.58.4.0 netmask 255.255.255.0 {
+        range 10.58.4.12 10.58.4.20;
+        range 10.58.4.160 10.58.4.168;
+        option routers 10.58.4.0;
+        option broadcast-address 10.58.4.255;
+        option domain-name-servers 10.58.1.2;
+}' > /etc/dhcp/dhcpd.conf
+```
     
 ## Soal 5
 
 > Lama waktu DHCP server meminjamkan alamat IP kepada Client yang melalui Switch3 selama 3 menit sedangkan pada client yang melalui Switch4 selama 12 menit. Dengan waktu maksimal dialokasikan untuk peminjaman alamat IP selama 96 menit
 
 
-1. add lease time configuration in `/etc/default/isc-dhcp-server` on `Himmel`
+1. add lease time configuration in `/etc/dhcp/dhcpd.conf` on `Himmel`
 
-* `/etc/default/isc-dhcp-server`:
-    ```sh
-    ...
-   
-    ...
-    ```
+* `/etc/dhcp/dhcpd.conf`:
+```sh
+echo 'subnet 10.58.1.0 netmask 255.255.255.0 {
+}
+
+subnet 10.58.2.0 netmask 255.255.255.0 {
+}
+
+subnet 192.212.3.0 netmask 255.255.255.0 {
+        range 10.58.3.16 10.58.3.32;
+        range 10.58.3.64 10.58.3.80;
+        option routers 10.58.3.0;
+        option broadcast-address 10.58.3.255;
+        option domain-name-servers 10.58.1.2;
+        default-lease-time 180;
+        max-lease-time 5760;
+}
+
+subnet 10.58.4.0 netmask 255.255.255.0 {
+        range 10.58.4.12 10.58.4.20;
+        range 10.58.4.160 10.58.4.168;
+        option routers 10.58.4.0;
+        option broadcast-address 10.58.4.255;
+        option domain-name-servers 10.58.1.2;
+        default-lease-time 720;
+        max-lease-time 5760;
+}' > /etc/dhcp/dhcpd.conf
+
+service isc-dhcp-server restart
+service isc-dhcp-server status
+```
+
+2. Juga konfigurasi pada node Aura
+```sh
+apt-get update
+apt-get install isc-dhcp-relay -y
+service isc-dhcp-relay start
+
+echo '
+SERVERS="10.58.1.1"
+INTERFACES="eth1 eth2 eth3 eth4"
+OPTIONS=""' > /etc/default/isc-dhcp-relay
+
+echo 'net.ipv4.ip_forward=1' > /etc/sysctl.conf
+
+service isc-dhcp-relay restart
+```
+
+![CLient Leasing Time](Images/jarkom5.png)
+
     
     
 ## Soal 6
